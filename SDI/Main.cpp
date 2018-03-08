@@ -9,5 +9,5 @@ Main::Main()
 
 Main::~Main()
 {
-	"Hi";
+
 }
