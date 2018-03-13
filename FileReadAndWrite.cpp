@@ -45,7 +45,7 @@ public:
 	std::string convertToString();
 
 private:
-	std::string projectString;
+	std::string projectString; // used for writing project to file
 };
 
 
@@ -72,7 +72,7 @@ int main()
 
 	int a;
 	std::cin >> a;
-    return 0;
+	return 0;
 }
 
 void readProjectsFile(std::string fileName, std::vector<Project>& allProjects)
@@ -83,111 +83,112 @@ void readProjectsFile(std::string fileName, std::vector<Project>& allProjects)
 
 	projectFile.open(fileName, std::ios::in);
 
-	while (std::getline(projectFile, line))
+	if (projectFile.is_open())
 	{
-		Project thisProject(line);
-		lineContents.clear();
-
-		splitLineIntoVector(line, lineContents, ',');
-
-		// sort through lineContents
-		thisProject.title = lineContents[0];
-		thisProject.summary = lineContents[1];
-		thisProject.genre = lineContents[2];
-		thisProject.releaseDate = lineContents[3];
-		thisProject.language = lineContents[5];
-		thisProject.runtime = lineContents[6];
-		thisProject.state = lineContents[10];
-
-		splitLineIntoVector(lineContents[4], thisProject.filmingLocations, ';');
-		splitLineIntoVector(lineContents[7], thisProject.keywords, ';');
-		splitLineIntoVector(lineContents[9], thisProject.weeklyTicketSales, ';');
-
-		std::vector<std::string> crewMembersString;
-		splitLineIntoVector(lineContents[8], crewMembersString, ';');
-		for each (std::string crewMember in crewMembersString)
+		while (std::getline(projectFile, line))
 		{
-			Crew newCrewMember;
-			int split = crewMember.find(':');
-			newCrewMember.name = crewMember.substr(0, split);
-			newCrewMember.job = crewMember.substr(split + 1);
-			thisProject.crewMembers.push_back(newCrewMember);
-		}
+			Project thisProject(line);
+			lineContents.clear();
 
-		if (thisProject.state == "released")
-		{
-			Material newMaterial;
+			// split input string at commas
+			splitLineIntoVector(line, lineContents, ',');
 
-			int currentIndex = 11;
+			// sort through lineContents
+			thisProject.title = lineContents[0];
+			thisProject.summary = lineContents[1];
+			thisProject.genre = lineContents[2];
+			thisProject.releaseDate = lineContents[3];
+			thisProject.language = lineContents[5];
+			thisProject.runtime = lineContents[6];
+			thisProject.state = lineContents[10];
 
-			while (currentIndex < lineContents.size())
+			splitLineIntoVector(lineContents[4], thisProject.filmingLocations, ';');
+			splitLineIntoVector(lineContents[7], thisProject.keywords, ';');
+			splitLineIntoVector(lineContents[9], thisProject.weeklyTicketSales, ';');
+
+			std::vector<std::string> crewMembersString;
+			splitLineIntoVector(lineContents[8], crewMembersString, ';');
+			for each (std::string crewMember in crewMembersString)
 			{
-				newMaterial.type = lineContents[currentIndex];
-				currentIndex++;
-				newMaterial.idNumber = lineContents[currentIndex];
-				currentIndex++;
-				newMaterial.materialTitle = lineContents[currentIndex];
-				currentIndex++;
-				newMaterial.format = lineContents[currentIndex];
-				currentIndex++;
-				newMaterial.audioFormat = lineContents[currentIndex];
-				currentIndex++;
-				newMaterial.materialRuntime = lineContents[currentIndex];
-				currentIndex++;
-				newMaterial.retailPrice = lineContents[currentIndex];
-				currentIndex++;
-				newMaterial.frameAspect = lineContents[currentIndex];
-				currentIndex++;
-
-				if (newMaterial.type == "VHS")
-				{
-					newMaterial.packaging = lineContents[currentIndex];
-					currentIndex++;
-					newMaterial.vhsLanguage = lineContents[currentIndex];
-					currentIndex++;
-					newMaterial.vhsSubtitleLanguage = lineContents[currentIndex];
-					currentIndex++;
-				}
-				else
-				{
-					std::vector<std::string> discs;
-
-					splitLineIntoVector(lineContents[currentIndex], newMaterial.languageTracks, ';');
-					currentIndex++;
-					splitLineIntoVector(lineContents[currentIndex], newMaterial.subtitles, ';');
-					currentIndex++;
-					splitLineIntoVector(lineContents[currentIndex], discs, '|');
-
-					for each(std::string discContents in discs)
-					{
-						std::vector<std::string> listOfFeatures;
-						splitLineIntoVector(discContents, listOfFeatures, ';');
-						newMaterial.featuresPerDisc.push_back(listOfFeatures);
-					}
-					currentIndex++;
-				}
-
-				thisProject.listOfMaterials.push_back(newMaterial);
+				Crew newCrewMember;
+				int split = crewMember.find(':');
+				newCrewMember.name = crewMember.substr(0, split);
+				newCrewMember.job = crewMember.substr(split + 1);
+				thisProject.crewMembers.push_back(newCrewMember);
 			}
 
-		}
-		else
-		{
-			/*
-			
-				Create project without additional materials
-			
-			*/
-		}
+			// add additional materials if project is released
+			if (thisProject.state == "released")
+			{
+				Material newMaterial;
 
-		allProjects.push_back(thisProject);
+				int currentIndex = 11;
+
+				while (currentIndex < lineContents.size())
+				{
+					newMaterial.type = lineContents[currentIndex];
+					currentIndex++;
+					newMaterial.idNumber = lineContents[currentIndex];
+					currentIndex++;
+					newMaterial.materialTitle = lineContents[currentIndex];
+					currentIndex++;
+					newMaterial.format = lineContents[currentIndex];
+					currentIndex++;
+					newMaterial.audioFormat = lineContents[currentIndex];
+					currentIndex++;
+					newMaterial.materialRuntime = lineContents[currentIndex];
+					currentIndex++;
+					newMaterial.retailPrice = lineContents[currentIndex];
+					currentIndex++;
+					newMaterial.frameAspect = lineContents[currentIndex];
+					currentIndex++;
+
+					if (newMaterial.type == "VHS")
+					{
+						newMaterial.packaging = lineContents[currentIndex];
+						currentIndex++;
+						newMaterial.vhsLanguage = lineContents[currentIndex];
+						currentIndex++;
+						newMaterial.vhsSubtitleLanguage = lineContents[currentIndex];
+						currentIndex++;
+					}
+					else
+					{
+						std::vector<std::string> discs;
+
+						splitLineIntoVector(lineContents[currentIndex], newMaterial.languageTracks, ';');
+						currentIndex++;
+						splitLineIntoVector(lineContents[currentIndex], newMaterial.subtitles, ';');
+						currentIndex++;
+						splitLineIntoVector(lineContents[currentIndex], discs, '|');
+
+						for each(std::string discContents in discs)
+						{
+							std::vector<std::string> listOfFeatures;
+							splitLineIntoVector(discContents, listOfFeatures, ';');
+							newMaterial.featuresPerDisc.push_back(listOfFeatures);
+						}
+						currentIndex++;
+					}
+
+					thisProject.listOfMaterials.push_back(newMaterial);
+				}
+
+			}
+
+			allProjects.push_back(thisProject);
+		}
+		projectFile.close();
 	}
-
-	projectFile.close();
+	else
+	{
+		std::cout << "Project File Not Found.";
+	}
 }
 
 void writeProjectsFile(std::string fileName, std::vector<Project> allProjects)
 {
+	/// overwrite file with name 'fileName' with data in 'allProjects'
 	std::ofstream projectFile;
 	projectFile.open(fileName, std::ios::out);
 	projectFile.clear();
@@ -239,10 +240,13 @@ void splitLineIntoVector(std::string line, std::vector<std::string>& newVector, 
 	newVector.push_back(substring);
 }
 
+/*
+	test project for testing file writing. Can be deleted.
+*/
 Project createTestProject()
 {
 	Project testProject;
-	
+
 	testProject.title = "Fast and Furious";
 	testProject.summary = "It's about street racing I think? Maybe drag racing, more specifically";
 	testProject.genre = "VroomVroom";
@@ -264,7 +268,7 @@ Project createTestProject()
 	testProject.weeklyTicketSales.push_back("first week sales");
 	testProject.weeklyTicketSales.push_back("second week sales");
 	testProject.state = "released";
-	
+
 	Material doubleSidedDVD;
 	doubleSidedDVD.type = "Double-Sided DVD";
 	doubleSidedDVD.idNumber = "001";
@@ -299,11 +303,16 @@ Project createTestProject()
 
 Project::Project(std::string stringRepresentation)
 {
+	/// String that gets read from or written to file
 	projectString = stringRepresentation;
 }
 
+/*
+	Lists all data in console. Needs to be replaced with function which sends data to controller.
+*/
 void Project::displayProjectData()
 {
+	/// displays each project detail on a new line in console app
 	std::cout << title << std::endl << summary << std::endl << genre << std::endl << releaseDate << std::endl << language << std::endl << runtime << std::endl << state << std::endl;
 	for each (Crew crew in crewMembers)
 	{
@@ -385,7 +394,7 @@ std::string Project::convertToString()
 		projectString += "\"" + summary + "\","; // summary
 		projectString += "\"" + genre + "\","; // genre
 		projectString += "\"" + releaseDate + "\","; // release date
-		
+
 		projectString += "\""; // filming locations
 		for (int i = 0; i < filmingLocations.size(); i++)
 		{
