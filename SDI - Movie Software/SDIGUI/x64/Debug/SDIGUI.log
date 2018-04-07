@@ -1,0 +1,7 @@
+﻿  MyForm.cpp
+c:\users\ayo\desktop\sdi\sdigui\MainScreen.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\ayo\desktop\sdi\sdigui\search_view.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\ayo\desktop\sdi\sdigui\search_view.h(284): warning C4101: 'title': unreferenced local variable
+c:\users\ayo\desktop\sdi\sdigui\search_view.h(384): warning C4101: 'k': unreferenced local variable
+MyForm.cpp(9): warning C4829: Possibly incorrect parameters to function main. Consider 'int main(Platform::Array<Platform::String^>^ argv)'
+  SDIGUI.vcxproj -> C:\Users\ayo\Desktop\SDI\x64\Debug\SDIGUI.exe
