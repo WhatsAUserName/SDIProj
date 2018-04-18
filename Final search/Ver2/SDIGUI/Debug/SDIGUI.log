@@ -1,0 +1,6 @@
+﻿  MainScreen.cpp
+  MyForm.cpp
+MyForm.cpp(9): warning C4829: Possibly incorrect parameters to function main. Consider 'int main(Platform::Array<Platform::String^>^ argv)'
+  Generating Code...
+  .NETFramework,Version=v4.6.1.AssemblyAttributes.cpp
+LINK : fatal error LNK1561: entry point must be defined
