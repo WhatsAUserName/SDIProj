@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Queue.h"
 #include <iostream> // for testing 
 
@@ -94,8 +93,10 @@ void Queue::clearOldEntries(std::tm* now)
 
 	while (!allOldEntriesCleared && queueLength > 0)
 	{
-		// if it is curently a different day and a greater hour than when the entry was made, then it is over 24 hours old and should be deleted
-		if (nextElement->dayOfMonthOfCreation != now->tm_mday && nextElement->hourOfCreation > now->tm_hour)
+		// if entry is over 24 hours old it should be deleted
+		if (nextElement->dayOfMonthOfCreation + 1 < now->tm_mday || // over 1 day old and both 'now' and time of creation were in the same month
+			((nextElement->dayOfMonthOfCreation > now->tm_mday || nextElement->dayOfMonthOfCreation + 1 == now->tm_mday) && now->tm_hour > nextElement->hourOfCreation) || // current day is the day after creation, so compare the hour it was created and the current hour
+			nextElement->dayOfMonthOfCreation > now->tm_mday && now->tm_mday > 1) // over one day old, but 'now' and creation time were different months
 		{
 			std::cout << "entry deleted\n";
 			dequeue();
@@ -108,7 +109,7 @@ void Queue::clearOldEntries(std::tm* now)
 	}
 }
 
-void Queue::writeToFile() 
+void Queue::writeToFile()
 {
 	std::ofstream entryLogFile;
 	LogEntry* thisElement = nextElement;
